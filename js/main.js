@@ -10,7 +10,7 @@ import { updateAccidents } from "./sim/accident.js";
 import { checkEnforcement } from "./sim/violation.js";
 import { endDay } from "./sim/economy.js";
 import { createAmbulances } from "./sim/emergency.js";
-import { createResidents, prepareDestinations } from "./sim/person.js";
+import { createResidents, prepareDestinations, dailyMigration } from "./sim/person.js";
 import { updateWeather } from "./sim/weather.js";
 import { drawSignalViews, updateSignalViews, clearSignalViews } from "./render/signals.js";
 import { updateDayNight } from "./render/daynight.js";
@@ -19,6 +19,7 @@ import { showModal } from "./ui/modal.js";
 import { setStatus, updatePanel } from "./ui/panel.js";
 import { initShop, updateShop } from "./ui/shop.js";
 import { showAlert } from "./ui/alerts.js";
+import { runAdvisor } from "./ui/advisor.js";
 
 const satellite = L.tileLayer(
   "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
@@ -68,6 +69,8 @@ document.getElementById("reload").onclick = () => showModal(applyArea);
 document.getElementById("simSpeed").onchange = e => {
   state.speed = Number(e.target.value);
 };
+
+document.getElementById("runAdvisor").onclick = () => runAdvisor(false);
 
 function applyArea(place, radius) {
   state.center = [place.lat, place.lon];
@@ -129,6 +132,10 @@ function tick() {
     if (newDay) {
       for (const p of state.people) p.newDay();
       showAlert(endDay());
+      const mig = dailyMigration();
+      if (mig.moveIn) showAlert("👥 " + mig.moveIn + " new residents moved in");
+      if (mig.moveOut) showAlert("👥 " + mig.moveOut + " residents left the city");
+      runAdvisor(true);
     }
     updateWeather(step);
     for (const p of state.people) p.update(step);

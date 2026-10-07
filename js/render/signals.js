@@ -11,6 +11,18 @@ export function drawSignalView(sig) {
   sig.views = {};
   const n = sig.node;
 
+  if (sig.adaptive) {
+    L.marker([n.lat, n.lon], {
+      icon: L.divIcon({
+        className: "",
+        iconSize: [16, 16],
+        iconAnchor: [8, 8],
+        html: '<div class="cam">🧠</div>'
+      }),
+      interactive: false
+    }).addTo(layers.signals);
+  }
+
   if (sig.dirs.has("ns")) {
     sig.views.ns = L.circleMarker([n.lat + offset, n.lon], {
       radius: 5,

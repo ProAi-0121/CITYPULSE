@@ -23,10 +23,11 @@ export const state = {
   police: [],
   challans: [],
   edgeUsage: new Map(),
+  accidentRoads: new Map(),
   economy: {
     budget: startBudget,
     satisfaction: satisfactionStart,
-    items: { camera: 0, police: 0, signal: 0 },
+    items: { camera: 0, police: 0, signal: 0, smart: 0, ambulance: 0 },
     finesToday: 0,
     finesTotal: 0
   },
@@ -59,10 +60,11 @@ export function resetWorld() {
   state.police = [];
   state.challans = [];
   state.edgeUsage = new Map();
+  state.accidentRoads = new Map();
   state.economy = {
     budget: startBudget,
     satisfaction: satisfactionStart,
-    items: { camera: 0, police: 0, signal: 0 },
+    items: { camera: 0, police: 0, signal: 0, smart: 0, ambulance: 0 },
     finesToday: 0,
     finesTotal: 0
   };

@@ -77,6 +77,7 @@ export const eveningMarketEnd = 21 * 60;
 export const eveningMarketChance = 0.25;
 
 export const maxHomes = 300;
+export const maxPopulation = 120;
 
 export const accidentChance = 0.00013;
 export const accidentTreat = 30;
@@ -90,13 +91,17 @@ export const satisfactionStart = 65;
 export const shopCosts = {
   camera: 50000,
   police: 40000,
-  signal: 80000
+  signal: 80000,
+  smart: 120000,
+  ambulance: 100000
 };
 
 export const shopMaintenance = {
   camera: 2000,
   police: 5000,
-  signal: 3000
+  signal: 3000,
+  smart: 6000,
+  ambulance: 8000
 };
 
 export const fines = {
@@ -126,6 +131,9 @@ export const signalCount = 20;
 export const signalGreen = 9;
 export const signalYellow = 2;
 export const signalStop = 8;
+export const adaptiveMinGreen = 5;
+export const adaptiveMaxGreen = 20;
+export const adaptiveRange = 100;
 
 export const maxRadius = 8000;
 export const minRadius = 300;

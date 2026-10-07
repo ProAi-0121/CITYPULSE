@@ -13,7 +13,8 @@ import {
   lunchChance,
   eveningMarketStart,
   eveningMarketEnd,
-  eveningMarketChance
+  eveningMarketChance,
+  maxPopulation
 } from "../config.js";
 import { findRoute, nearestNode, randomNode } from "./route.js";
 import { Vehicle } from "./vehicle.js";
@@ -118,6 +119,7 @@ export function prepareDestinations(pois) {
 export function createResidents(count = startCount) {
   const { homes, works, markets } = state.pois;
   for (let i = 0; i < count; i++) {
+    if (state.people.length >= maxPopulation) return;
     const home = homes[Math.floor(Math.random() * homes.length)];
     const work = works[Math.floor(Math.random() * works.length)];
     const market = markets.length
@@ -126,4 +128,35 @@ export function createResidents(count = startCount) {
     state.people.push(new Person(state.nextId, home, work, market));
     state.nextId++;
   }
+}
+
+export function dailyMigration() {
+  const s = state.economy.satisfaction;
+  let moveIn = 0;
+  let moveOut = 0;
+
+  if (s >= 75) moveIn = 2 + Math.floor(Math.random() * 3);
+  else if (s >= 60) moveIn = Math.random() < 0.5 ? 1 : 0;
+  else if (s < 45) moveOut = 1 + Math.floor(Math.random() * 3);
+  else if (s < 55) moveOut = Math.random() < 0.4 ? 1 : 0;
+
+  moveIn = Math.min(moveIn, Math.max(0, maxPopulation - state.people.length));
+  for (let i = 0; i < moveIn; i++) createResidents(1);
+
+  for (let i = 0; i < moveOut; i++) removeRandom();
+
+  return { moveIn, moveOut };
+}
+
+function removeRandom() {
+  const candidates = state.people.filter(p => p.vehicle.parked && !p.vehicle.crashed);
+  if (candidates.length <= 5) return;
+
+  const p = candidates[Math.floor(Math.random() * candidates.length)];
+  if (state.selected === p.vehicle) state.selected = null;
+
+  state.people.splice(state.people.indexOf(p), 1);
+  const vi = state.vehicles.indexOf(p.vehicle);
+  if (vi >= 0) state.vehicles.splice(vi, 1);
+  p.vehicle.destroy();
 }

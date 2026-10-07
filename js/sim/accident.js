@@ -77,7 +77,10 @@ function crash(v) {
 
   state.accidents.push(a);
   state.metrics.accidents++;
-  showAlert("⚠ Accident on " + v.edge.name + " — emergency dispatch requested");
+  state.metrics.accidentsToday++;
+  const road = v.edge.name;
+  state.accidentRoads.set(road, (state.accidentRoads.get(road) || 0) + 1);
+  showAlert("⚠ Accident on " + road + " — emergency dispatch requested");
 }
 
 function hasAccident(edge) {

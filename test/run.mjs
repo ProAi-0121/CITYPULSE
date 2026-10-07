@@ -8,6 +8,9 @@ import { createResidents, prepareDestinations } from "../js/sim/person.js";
 import { createAmbulances } from "../js/sim/emergency.js";
 import { layers } from "../js/layers.js";
 import { setWeather, weather } from "../js/sim/weather.js";
+import { Signal } from "../js/sim/signals.js";
+import { dailyMigration } from "../js/sim/person.js";
+import { analyze } from "../js/sim/advisor.js";
 
 const stubMarker = () => {
   const m = {
@@ -129,5 +132,46 @@ setWeather("storm");
 if (weather().accident !== 2.4) { console.log("storm factors wrong"); process.exit(1); }
 setWeather("clear");
 console.log("weather factors OK");
+
+const sig = new Signal(state.nodes.get(1), new Set(["ns", "ew"]), true);
+const queued = state.vehicles.find(v => !v.emergency);
+queued.parked = false;
+queued.crashed = false;
+queued.speed = 0;
+queued.edge = state.edges.find(e => e.from === 4 && e.to === 1);
+queued.t = 0.97;
+state.vehicles.push(queued);
+sig.step = 2;
+sig.timer = 6;
+sig.phaseTime = 6;
+sig.update(1);
+if (sig.step !== 3) { console.log("adaptive signal did not switch, step=" + sig.step); process.exit(1); }
+console.log("adaptive signal OK: switched to yellow with queue on other side");
+
+state.economy.satisfaction = 85;
+const before = state.people.length;
+const mig = dailyMigration();
+if (state.people.length <= before) { console.log("no move-in at high satisfaction"); process.exit(1); }
+console.log("migration OK: +" + mig.moveIn + " residents at satisfaction 85");
+
+state.accidentRoads.set("Test Rd", 3);
+const tips = analyze();
+if (!tips[0].text.includes("Test Rd")) { console.log("advisor missed hotspot: " + tips[0].text); process.exit(1); }
+console.log("advisor OK:", tips[0].text);
+
+const ambBefore = state.ambulances.length;
+const b4 = state.economy.budget;
+if (buy("ambulance")) { console.log("ambulance purchase failed"); process.exit(1); }
+if (state.ambulances.length !== ambBefore + 1 || state.economy.budget !== b4 - 100000) {
+  console.log("ambulance purchase math wrong"); process.exit(1);
+}
+console.log("ambulance purchase OK");
+
+const b5 = state.economy.budget;
+if (buy("smart")) { console.log("smart purchase failed"); process.exit(1); }
+const smartSig = [...state.signals.values()].find(s => s.adaptive);
+if (!smartSig) { console.log("no adaptive signal after smart purchase"); process.exit(1); }
+if (state.economy.budget !== b5 - 120000) { console.log("smart budget math wrong"); process.exit(1); }
+console.log("smart signal purchase OK");
 
 console.log("TEST PASSED");

@@ -7,6 +7,7 @@ import {
 } from "../config.js";
 import { cameraOn } from "./violation.js";
 import { addSignalAt } from "./signals.js";
+import { createAmbulances } from "./emergency.js";
 import { showAlert } from "../ui/alerts.js";
 import { layers } from "../layers.js";
 
@@ -20,11 +21,41 @@ export function buy(kind) {
   if (kind === "camera") placed = placeCamera();
   else if (kind === "police") placed = placePolice();
   else if (kind === "signal") placed = placeSignal();
+  else if (kind === "smart") placed = placeSmart();
+  else if (kind === "ambulance") placed = placeAmbulance();
   if (!placed) return "No suitable location available";
 
   state.economy.budget -= cost;
   state.economy.items[kind]++;
   return null;
+}
+
+function placeSmart() {
+  let best = null;
+  let bestScore = -1;
+  for (const [node, sig] of state.signals) {
+    let score = 0;
+    for (const e of state.incoming.get(node) || []) {
+      score += state.edgeUsage.get(e) || 0;
+    }
+    if (score > bestScore) {
+      bestScore = score;
+      best = sig;
+    }
+  }
+  if (!best) {
+    const made = placeSignal();
+    if (!made) return false;
+    best = made;
+  }
+  best.adaptive = true;
+  showAlert("🧠 Smart signal upgraded — it now adapts to queues");
+  return true;
+}
+
+function placeAmbulance() {
+  createAmbulances(1);
+  return true;
 }
 
 function placeCamera() {
@@ -101,19 +132,22 @@ function placeSignal() {
       candidates.push({ node, score: usage + inc.length + out.length });
     }
   }
-  if (!candidates.length) return false;
+  if (!candidates.length) return null;
 
   candidates.sort((a, b) => b.score - a.score);
   const node = candidates[0].node;
-  return addSignalAt(node);
+  return addSignalAt(node) ? state.signals.get(node) : null;
 }
 
 export function endDay() {
   const e = state.economy;
+  const m = shopMaintenance;
   const maint =
-    e.items.camera * shopMaintenance.camera +
-    e.items.police * shopMaintenance.police +
-    e.items.signal * shopMaintenance.signal;
+    e.items.camera * m.camera +
+    e.items.police * m.police +
+    e.items.signal * m.signal +
+    e.items.smart * m.smart +
+    e.items.ambulance * m.ambulance;
   const tax = state.people.length * dailyTax;
   e.budget += tax - maint;
 
