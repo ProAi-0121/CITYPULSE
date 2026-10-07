@@ -14,6 +14,7 @@ import {
 import { groupOf } from "./signals.js";
 import { findRoute } from "./route.js";
 import { cameraOn, policeAt, challan, cameraEntryCheck } from "./violation.js";
+import { weather } from "./weather.js";
 import {
   createVehicleMarker,
   updateVehicleMarker,
@@ -82,7 +83,7 @@ export class Vehicle {
     const e = this.edge;
     const limit = roadSpeeds[e.type] || 50;
     const over = 1 + (1 - this.compliance) * 0.4;
-    let target = Math.min(this.topSpeed, limit * over);
+    let target = Math.min(this.topSpeed, limit * over) * weather().speed;
 
     if (cameraOn(e) || policeAt(e.to)) {
       target = Math.min(target, limit * (0.8 + 0.2 * this.compliance));

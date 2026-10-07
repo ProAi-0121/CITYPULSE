@@ -1,6 +1,7 @@
 import { state } from "../state.js";
 import { accidentChance, accidentTreat } from "../config.js";
 import { absMinutes } from "./clock.js";
+import { weather } from "./weather.js";
 import { showAlert } from "../ui/alerts.js";
 import { refreshVehicleMarkers } from "../render/vehicleView.js";
 import { layers } from "../layers.js";
@@ -13,6 +14,7 @@ export function rollAccidents(dt) {
 
     let risk = accidentChance * (0.3 + v.speed / v.topSpeed);
     risk *= 2 - v.compliance;
+    risk *= weather().accident;
     if (v.jump) risk *= 3;
     if (Math.random() < risk * dt) crash(v);
   }

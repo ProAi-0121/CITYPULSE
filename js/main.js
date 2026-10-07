@@ -11,8 +11,10 @@ import { checkEnforcement } from "./sim/violation.js";
 import { endDay } from "./sim/economy.js";
 import { createAmbulances } from "./sim/emergency.js";
 import { createResidents, prepareDestinations } from "./sim/person.js";
+import { updateWeather } from "./sim/weather.js";
 import { drawSignalViews, updateSignalViews, clearSignalViews } from "./render/signals.js";
 import { updateDayNight } from "./render/daynight.js";
+import { updateWeatherView } from "./render/weather.js";
 import { showModal } from "./ui/modal.js";
 import { setStatus, updatePanel } from "./ui/panel.js";
 import { initShop, updateShop } from "./ui/shop.js";
@@ -128,6 +130,7 @@ function tick() {
       for (const p of state.people) p.newDay();
       showAlert(endDay());
     }
+    updateWeather(step);
     for (const p of state.people) p.update(step);
     for (const sig of state.signals.values()) sig.update(step);
     updateSignalViews(state.signals);
@@ -137,6 +140,7 @@ function tick() {
   }
 
   updateDayNight();
+  updateWeatherView();
   updateShop();
   updatePanel();
 }

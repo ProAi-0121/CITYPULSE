@@ -7,6 +7,7 @@ import { buy, endDay } from "../js/sim/economy.js";
 import { createResidents, prepareDestinations } from "../js/sim/person.js";
 import { createAmbulances } from "../js/sim/emergency.js";
 import { layers } from "../js/layers.js";
+import { setWeather, weather } from "../js/sim/weather.js";
 
 const stubMarker = () => {
   const m = {
@@ -119,5 +120,14 @@ const satBefore = state.economy.satisfaction;
 const summary = endDay();
 if (state.economy.satisfaction === satBefore) { console.log("satisfaction frozen"); process.exit(1); }
 console.log(summary);
+
+setWeather("rain");
+if (weather().speed !== 0.85 || weather().accident !== 1.6) {
+  console.log("rain factors wrong"); process.exit(1);
+}
+setWeather("storm");
+if (weather().accident !== 2.4) { console.log("storm factors wrong"); process.exit(1); }
+setWeather("clear");
+console.log("weather factors OK");
 
 console.log("TEST PASSED");

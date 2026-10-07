@@ -1,4 +1,4 @@
-import { startMinutes, startBudget, satisfactionStart } from "./config.js";
+import { startMinutes, startBudget, satisfactionStart, weatherChangeMin } from "./config.js";
 
 export const state = {
   running: true,
@@ -7,6 +7,7 @@ export const state = {
   radius: 1800,
   name: "Ashoka Marg, Nashik",
   clock: { day: 1, minutes: startMinutes },
+  weather: { kind: "clear", timer: weatherChangeMin },
   nodes: new Map(),
   adjacency: new Map(),
   incoming: new Map(),
@@ -76,4 +77,5 @@ export function resetWorld() {
   state.selected = null;
   state.nextId = 1;
   state.clock = { day: 1, minutes: startMinutes };
+  state.weather = { kind: "clear", timer: weatherChangeMin };
 }

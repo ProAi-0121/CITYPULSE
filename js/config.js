@@ -107,6 +107,16 @@ export const fines = {
 export const cameraCatch = 1.08;
 export const challanCooldown = 30;
 
+export const weatherTypes = {
+  clear: { icon: "☀️", label: "Clear", speed: 1, accident: 1, tint: 0 },
+  rain: { icon: "🌧️", label: "Rain", speed: 0.85, accident: 1.6, tint: 0.22 },
+  storm: { icon: "⛈️", label: "Storm", speed: 0.7, accident: 2.4, tint: 0.38 },
+  fog: { icon: "🌫️", label: "Fog", speed: 0.6, accident: 2, tint: 0.45 }
+};
+
+export const weatherChangeMin = 120;
+export const weatherChangeMax = 480;
+
 export const carHeight = 30;
 export const bikeHeight = 22;
 export const carAspect = 0.45;
