@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Autonomous City — Ashoka Marg</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="style.css?v=3">
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">OOPCG • AUTONOMOUS CITY</div>
+        <h1>🚗 Ashoka Marg — Autonomous Traffic Lab</h1>
+        <p id="status">Loading Ashoka Marg road network…</p>
+      </div>
+
+      <div class="controls">
+        <button id="toggle">Pause</button>
+        <button id="spawn">+ Resident</button>
+        <button id="reload">Reload Roads</button>
+        <button id="basemapToggle">🛰️ Satellite</button>
+        <label>Simulation
+          <select id="simSpeed">
+            <option value="0.25">0.25×</option>
+            <option value="0.5">0.5×</option>
+            <option value="1" selected>1×</option>
+            <option value="2">2×</option>
+            <option value="4">4×</option>
+          </select>
+        </label>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="map-card">
+        <div id="map"></div>
+        <div id="nightTint"></div>
+        <div id="alertBox" class="alert"></div>
+        <div class="map-overlay">
+          <b>LIVE OSM ROAD NETWORK</b>
+          <span>© OpenStreetMap contributors</span>
+        </div>
+      </section>
+      <aside class="side">
+        <section>
+          <h2>Simulation</h2>
+          <div class="clock" id="clock">Day 1 · 07:00</div>
+          <div class="stat"><span>Road ways</span><b id="roads">0</b></div>
+          <div class="stat"><span>Graph edges</span><b id="edges">0</b></div>
+          <div class="stat"><span>Signals</span><b id="signals">0</b></div>
+          <div class="stat"><span>Population</span><b id="people">0</b></div>
+          <div class="stat"><span>Driving</span><b id="moving">0</b></div>
+          <div class="stat"><span>Parked</span><b id="parked">0</b></div>
+          <div class="stat"><span>Avg speed</span><b id="avg">0 km/h</b></div>
+          <div class="stat"><span>Accidents</span><b id="accidents">0</b></div>
+          <div class="stat"><span>Avg response</span><b id="response">—</b></div>
+        </section>
+
+        <section>
+          <h2>Selected Vehicle</h2>
+          <div id="selected" class="selected">Click a car.</div>
+        </section>
+
+        <section>
+          <h2>Vehicle behavior</h2>
+          <p class="help">
+            Every car gets an individual cruising speed, acceleration and driving style.
+            Speeds vary continuously, and vehicles slow down near junctions before selecting
+            another connected road.
+          </p>
+        </section>
+
+        <section>
+          <h2>City Management</h2>
+          <div class="clock" id="budget">₹10,00,000</div>
+          <div class="stat"><span>Satisfaction</span><b id="satisfaction">65 / 100</b></div>
+          <div class="shop-item">
+            <span>📷 Speed camera <small>₹50k</small></span>
+            <button id="buycamera">Buy</button>
+          </div>
+          <div class="shop-item">
+            <span>👮 Traffic police <small>₹40k</small></span>
+            <button id="buypolice">Buy</button>
+          </div>
+          <div class="shop-item">
+            <span>🚦 Traffic signal <small>₹80k</small></span>
+            <button id="buysignal">Buy</button>
+          </div>
+          <div class="items" id="items">0 cameras · 0 police · 0 signals</div>
+        </section>
+
+        <section>
+          <h2>Enforcement</h2>
+          <div class="stat"><span>Recent challans</span><b id="violations">0</b></div>
+          <div class="stat"><span>Fines collected</span><b id="fines">₹0</b></div>
+          <div id="challanFeed" class="challans"></div>
+        </section>
+
+        <section>
+          <h2>Next AI step</h2>
+          <div class="next">
+            <span>01</span> MLP driving model<br>
+            <span>02</span> AI city advisor<br>
+            <span>03</span> Weather system<br>
+            <span>04</span> Population dynamics
+          </div>
+        </section>
+      </aside>
+    </main>
+  </div>
+
+  <div id="locationModal" class="modal-backdrop">
+    <div class="modal">
+      <h2>Choose simulation area</h2>
+      <p class="modal-help">
+        Enter a place name (e.g. “Ashoka Marg, Nashik”) or coordinates
+        (“19.9809, 73.7954”), and how far around it roads should be loaded.
+      </p>
+      <label for="locationInput">Location</label>
+      <input id="locationInput" type="text"
+             placeholder="Place name or lat, lon"
+             value="Ashoka Marg, Nashik" autocomplete="off">
+      <label for="radiusInput">Radius (meters)</label>
+      <input id="radiusInput" type="number" min="300" max="8000"
+             step="100" value="1800">
+      <p id="locationError" class="modal-error"></p>
+      <div class="modal-actions">
+        <button id="loadAreaBtn">Load Roads</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
