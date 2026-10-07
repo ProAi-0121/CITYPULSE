@@ -8,19 +8,16 @@ export function updateTraffic(dt) {
 
   for (const v of state.vehicles) {
     if (v.parked || v.crashed) continue;
+    if (v.kind === "bus" && (!v.edge || v.atStop)) {
+      v.update(dt, null);
+      continue;
+    }
     if (!byEdge.has(v.edge)) byEdge.set(v.edge, []);
     byEdge.get(v.edge).push(v);
     state.edgeUsage.set(v.edge, (state.edgeUsage.get(v.edge) || 0) + 1);
   }
 
   addAccidentObstacles(byEdge);
-
-  for (const v of state.vehicles) {
-    if (v.kind === "bus" && v.atStop && v.edge) {
-      if (!byEdge.has(v.edge)) byEdge.set(v.edge, []);
-      byEdge.get(v.edge).push({ t: v.t, speed: 0, obstacle: true });
-    }
-  }
 
   for (const list of byEdge.values()) {
     list.sort((a, b) => b.t - a.t);

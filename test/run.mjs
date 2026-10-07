@@ -11,6 +11,7 @@ import { setWeather, weather } from "../js/sim/weather.js";
 import { Signal } from "../js/sim/signals.js";
 import { dailyMigration } from "../js/sim/person.js";
 import { analyze } from "../js/sim/advisor.js";
+import { createBuses } from "../js/sim/bus.js";
 
 const stubMarker = () => {
   const m = {
@@ -87,7 +88,12 @@ for (let sec = 0; sec < 20000; sec++) {
 }
 
 console.log("firstCrash:", firstCrash, "cleared:", clearedTick);
-if (firstCrash < 0 || clearedTick < 0) { console.log("TEST FAILED (accident cycle)"); process.exit(1); }
+if (firstCrash < 0 || clearedTick < 0) {
+  console.log("TEST FAILED (accident cycle)");
+  console.log("accidents:", JSON.stringify(state.accidents.map(a => ({ amb: a.ambulance ? a.ambulance.phase + "/" + a.ambulance.parked : null, treated: Math.round(a.treated), edge: a.edge.id }))));
+  console.log("ambulances:", JSON.stringify(state.ambulances.map(x => ({ phase: x.phase, busy: x.busy, at: x.atNode, parked: x.parked, edge: x.edge ? x.edge.id : null }))));
+  process.exit(1);
+}
 if (state.metrics.responseCount === 0) { console.log("no response recorded"); process.exit(1); }
 if (state.vehicles.some(v => v.crashed)) { console.log("crashed vehicle stuck"); process.exit(1); }
 console.log("accident cycle OK, response =", state.metrics.lastResponse, "min");
@@ -174,4 +180,35 @@ if (!smartSig) { console.log("no adaptive signal after smart purchase"); process
 if (state.economy.budget !== b5 - 120000) { console.log("smart budget math wrong"); process.exit(1); }
 console.log("smart signal purchase OK");
 
+const busBefore = state.vehicles.filter(v => v.kind === "bus").length;
+if (createBuses(1)) {
+  const bus = state.vehicles[state.vehicles.length - 1];
+  if (bus.kind !== "bus" || !bus.atStop) { console.log("bus init wrong"); process.exit(1); }
+
+  let stoppedAtStop = false;
+  let moved = false;
+  let lastT = -1;
+  for (let sec = 0; sec < 4000; sec++) {
+    updateClock(1);
+    updateTraffic(1);
+    updateAccidents(1);
+    if (bus.atStop) stoppedAtStop = true;
+    if (bus.edge && !bus.atStop && bus.t !== lastT) { moved = true; lastT = bus.t; }
+    if (stoppedAtStop && bus.stopIndex > 0 && bus.stopIndex !== bus.stops.length) break;
+  }
+  if (!moved) { console.log("bus never moved"); process.exit(1); }
+  if (!stoppedAtStop) { console.log("bus never stopped at a stop"); process.exit(1); }
+  if (bus.stopIndex === 0) { console.log("bus never progressed around loop"); process.exit(1); }
+  console.log("bus OK: drives loop, stops at stops, stopIndex =", bus.stopIndex);
+
+  const bB = state.economy.budget;
+  state.economy.satisfaction = 65;
+  const sB = state.economy.satisfaction;
+  const summary2 = endDay();
+  if (state.economy.budget <= bB) { console.log("bus fares not applied"); process.exit(1); }
+  if (state.economy.satisfaction <= sB) { console.log("bus satisfaction bonus missing"); process.exit(1); }
+  console.log("bus economy OK:", summary2.slice(0, 60));
+} else {
+  console.log("no bus stops available (fallback should exist)");
+}
 console.log("TEST PASSED");

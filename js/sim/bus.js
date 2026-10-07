@@ -12,11 +12,11 @@ export class Bus extends Vehicle {
     this.atStop = true;
     this.dwell = 5;
     this.atNode = stops[0];
+    this.parked = false;
   }
 
   arrive(node) {
     this.atNode = node != null ? node : this.edge.to;
-    this.parked = true;
     this.atStop = true;
     this.dwell = busDwell;
     this.speed = 0;

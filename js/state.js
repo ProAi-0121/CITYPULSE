@@ -27,7 +27,7 @@ export const state = {
   economy: {
     budget: startBudget,
     satisfaction: satisfactionStart,
-    items: { camera: 0, police: 0, signal: 0, smart: 0, ambulance: 0 },
+    items: { camera: 0, police: 0, signal: 0, smart: 0, ambulance: 0, bus: 0 },
     finesToday: 0,
     finesTotal: 0
   },
@@ -64,7 +64,7 @@ export function resetWorld() {
   state.economy = {
     budget: startBudget,
     satisfaction: satisfactionStart,
-    items: { camera: 0, police: 0, signal: 0, smart: 0, ambulance: 0 },
+    items: { camera: 0, police: 0, signal: 0, smart: 0, ambulance: 0, bus: 0 },
     finesToday: 0,
     finesTotal: 0
   };

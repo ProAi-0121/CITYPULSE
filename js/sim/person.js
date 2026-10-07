@@ -97,7 +97,7 @@ export function prepareDestinations(pois) {
   const works = pois.works.concat(pois.hospitals).map(p => nearestNode(p.lat, p.lon));
   const hospitals = pois.hospitals.map(p => nearestNode(p.lat, p.lon));
   const markets = pois.markets.map(p => nearestNode(p.lat, p.lon));
-  const busstops = pois.busstops.map(p => nearestNode(p.lat, p.lon));
+  const busstops = (pois.busstops || []).map(p => nearestNode(p.lat, p.lon));
 
   state.pois = {
     homes: homes.filter(Boolean),
