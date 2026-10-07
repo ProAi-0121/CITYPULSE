@@ -4,7 +4,7 @@ import { showAlert } from "./alerts.js";
 
 export function initShop() {
   for (const kind of ["camera", "police", "signal"]) {
-    document.getElementById("buy" + kind.charAt(0).toUpperCase() + kind.slice(1)).onclick = () => {
+    document.getElementById("buy" + kind).onclick = () => {
       const err = buy(kind);
       if (err) showAlert("⚠ " + err);
     };
