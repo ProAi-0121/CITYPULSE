@@ -97,12 +97,14 @@ export function prepareDestinations(pois) {
   const works = pois.works.concat(pois.hospitals).map(p => nearestNode(p.lat, p.lon));
   const hospitals = pois.hospitals.map(p => nearestNode(p.lat, p.lon));
   const markets = pois.markets.map(p => nearestNode(p.lat, p.lon));
+  const busstops = pois.busstops.map(p => nearestNode(p.lat, p.lon));
 
   state.pois = {
     homes: homes.filter(Boolean),
     works: works.filter(Boolean),
     hospitals: hospitals.filter(Boolean),
-    markets: markets.filter(Boolean)
+    markets: markets.filter(Boolean),
+    busstops: busstops.filter(Boolean)
   };
 
   if (!state.pois.homes.length) {
@@ -113,6 +115,10 @@ export function prepareDestinations(pois) {
   }
   if (!state.pois.hospitals.length) {
     state.pois.hospitals.push(state.pois.works[0]);
+  }
+  if (state.pois.busstops.length < 2) {
+    state.pois.busstops = [];
+    for (let i = 0; i < 6; i++) state.pois.busstops.push(randomNode());
   }
 }
 

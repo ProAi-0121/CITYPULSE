@@ -15,7 +15,7 @@ export const state = {
   ways: [],
   signals: new Map(),
   people: [],
-  pois: { homes: [], works: [], hospitals: [], markets: [] },
+  pois: { homes: [], works: [], hospitals: [], markets: [], busstops: [] },
   vehicles: [],
   accidents: [],
   ambulances: [],
@@ -50,7 +50,7 @@ export function resetWorld() {
   state.edges = [];
   state.ways = [];
   state.signals.clear();
-  state.pois = { homes: [], works: [], hospitals: [], markets: [] };
+  state.pois = { homes: [], works: [], hospitals: [], markets: [], busstops: [] };
   for (const v of state.vehicles) v.destroy();
   state.vehicles = [];
   state.people = [];

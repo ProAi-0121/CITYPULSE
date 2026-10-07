@@ -9,7 +9,8 @@ import {
   carAspect,
   bikeAspect,
   signalStop,
-  roadSpeeds
+  roadSpeeds,
+  busSpeed
 } from "../config.js";
 import { groupOf } from "./signals.js";
 import { findRoute } from "./route.js";
@@ -37,6 +38,14 @@ export class Vehicle {
       this.brake = 3 + Math.random() * 3;
       this.h = carHeight;
       this.w = carHeight * carAspect;
+    } else if (kind === "bus") {
+      this.model = "City Bus";
+      this.img = null;
+      this.topSpeed = busSpeed;
+      this.accel = 1.5;
+      this.brake = 4;
+      this.h = 26;
+      this.w = 26;
     } else {
       const file = bikeImages[Math.floor(Math.random() * bikeImages.length)];
       this.model = file.replace(".png", "");

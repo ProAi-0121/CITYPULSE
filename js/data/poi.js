@@ -10,6 +10,9 @@ const urls = [
 function classify(tags) {
   const a = tags.amenity;
 
+  if (tags.highway === "bus_stop" || tags.public_transport === "platform") {
+    return "busstop";
+  }
   if (["hospital", "clinic", "doctors"].includes(a)) {
     return "hospital";
   }
@@ -48,6 +51,8 @@ export async function fetchPOIs() {
     'node["amenity"](' + bbox + ");" +
     'node["shop"](' + bbox + ");" +
     'node["office"](' + bbox + ");" +
+    'node["highway"="bus_stop"](' + bbox + ");" +
+    'node["public_transport"="platform"](' + bbox + ");" +
     'way["amenity"](' + bbox + ");" +
     'way["shop"](' + bbox + ");" +
     'way["office"](' + bbox + ");" +
@@ -55,7 +60,7 @@ export async function fetchPOIs() {
     ");" +
     "out center tags qt;";
 
-  const empty = { homes: [], works: [], hospitals: [], markets: [] };
+  const empty = { homes: [], works: [], hospitals: [], markets: [], busstops: [] };
 
   for (const url of urls) {
     try {
@@ -64,6 +69,7 @@ export async function fetchPOIs() {
       const works = [];
       const hospitals = [];
       const markets = [];
+      const busstops = [];
 
       for (const el of data.elements || []) {
         if (!el.tags) continue;
@@ -74,10 +80,11 @@ export async function fetchPOIs() {
         else if (kind === "work") works.push(p);
         else if (kind === "hospital") hospitals.push(p);
         else if (kind === "market") markets.push(p);
+        else if (kind === "busstop") busstops.push(p);
       }
 
       if (!homes.length && !works.length && !hospitals.length) continue;
-      return { homes, works, hospitals, markets };
+      return { homes, works, hospitals, markets, busstops };
     } catch (err) {
       console.warn("[POI] failed on " + url + ":", err.message);
     }

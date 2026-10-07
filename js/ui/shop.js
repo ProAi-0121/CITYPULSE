@@ -3,7 +3,7 @@ import { buy } from "../sim/economy.js";
 import { showAlert } from "./alerts.js";
 
 export function initShop() {
-  for (const kind of ["camera", "police", "signal", "smart", "ambulance"]) {
+  for (const kind of ["camera", "police", "signal", "smart", "ambulance", "bus"]) {
     document.getElementById("buy" + kind).onclick = () => {
       const err = buy(kind);
       if (err) showAlert("⚠ " + err);
@@ -18,5 +18,5 @@ export function updateShop() {
   document.getElementById("items").textContent =
     e.items.camera + " cameras · " + e.items.police + " police · " +
     e.items.signal + " signals (" + e.items.smart + " smart) · " +
-    e.items.ambulance + " ambulances";
+    e.items.ambulance + " ambulances · " + e.items.bus + " buses";
 }

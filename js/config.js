@@ -93,7 +93,8 @@ export const shopCosts = {
   police: 40000,
   signal: 80000,
   smart: 120000,
-  ambulance: 100000
+  ambulance: 100000,
+  bus: 80000
 };
 
 export const shopMaintenance = {
@@ -101,7 +102,8 @@ export const shopMaintenance = {
   police: 5000,
   signal: 3000,
   smart: 6000,
-  ambulance: 8000
+  ambulance: 8000,
+  bus: 4000
 };
 
 export const fines = {
@@ -121,6 +123,11 @@ export const weatherTypes = {
 
 export const weatherChangeMin = 120;
 export const weatherChangeMax = 480;
+
+export const busSpeed = 25;
+export const busDwell = 20;
+export const busFare = 2000;
+export const busStopsFallback = 6;
 
 export const carHeight = 30;
 export const bikeHeight = 22;

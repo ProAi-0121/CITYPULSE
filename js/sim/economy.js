@@ -2,12 +2,14 @@ import { state } from "../state.js";
 import {
   startBudget,
   dailyTax,
+  busFare,
   shopCosts,
   shopMaintenance
 } from "../config.js";
 import { cameraOn } from "./violation.js";
 import { addSignalAt } from "./signals.js";
 import { createAmbulances } from "./emergency.js";
+import { createBuses } from "./bus.js";
 import { showAlert } from "../ui/alerts.js";
 import { layers } from "../layers.js";
 
@@ -23,6 +25,10 @@ export function buy(kind) {
   else if (kind === "signal") placed = placeSignal();
   else if (kind === "smart") placed = placeSmart();
   else if (kind === "ambulance") placed = placeAmbulance();
+  else if (kind === "bus") placed = createBuses(1);
+  if (placed && kind === "bus") {
+    showAlert("🚌 City bus added to the fleet");
+  }
   if (!placed) return "No suitable location available";
 
   state.economy.budget -= cost;
@@ -147,14 +153,17 @@ export function endDay() {
     e.items.police * m.police +
     e.items.signal * m.signal +
     e.items.smart * m.smart +
-    e.items.ambulance * m.ambulance;
+    e.items.ambulance * m.ambulance +
+    e.items.bus * m.bus;
+  const fares = e.items.bus * busFare;
   const tax = state.people.length * dailyTax;
-  e.budget += tax - maint;
+  e.budget += tax + fares - maint;
 
   let delta = 1;
   delta -= state.metrics.accidentsToday * 2;
   delta -= Math.min(3, state.metrics.challansToday * 0.1);
   if (state.metrics.lastResponse != null && state.metrics.lastResponse < 30) delta += 1;
+  delta += Math.min(6, e.items.bus * 2);
   e.satisfaction = Math.max(0, Math.min(100, e.satisfaction + delta));
 
   state.metrics.accidentsToday = 0;

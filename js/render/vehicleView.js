@@ -2,6 +2,18 @@ import { state } from "../state.js";
 import { layers } from "../layers.js";
 
 function makeIcon(v) {
+  if (v.kind === "bus") {
+    const cls =
+      (v.atStop ? "parked " : "") + (state.selected === v ? "picked" : "");
+    return L.divIcon({
+      className: "",
+      iconSize: [26, 26],
+      iconAnchor: [13, 13],
+      html:
+        '<div class="car-view ' + cls + '"><div class="busicon">🚌</div></div>'
+    });
+  }
+
   const rot = v.edge ? v.edge.bearing : 0;
   const cls =
     (v.parked ? "parked " : "") +
@@ -40,6 +52,8 @@ export function updateVehicleMarker(v) {
   const lat = a.lat + (b.lat - a.lat) * v.t;
   const lon = a.lon + (b.lon - a.lon) * v.t;
   v.marker.setLatLng([lat, lon]);
+
+  if (v.kind === "bus") return;
 
   const box = v.marker.getElement();
   const view = box && box.querySelector(".car-view");

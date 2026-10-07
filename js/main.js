@@ -11,6 +11,7 @@ import { checkEnforcement } from "./sim/violation.js";
 import { endDay } from "./sim/economy.js";
 import { createAmbulances } from "./sim/emergency.js";
 import { createResidents, prepareDestinations, dailyMigration } from "./sim/person.js";
+import { createBuses } from "./sim/bus.js";
 import { updateWeather } from "./sim/weather.js";
 import { drawSignalViews, updateSignalViews, clearSignalViews } from "./render/signals.js";
 import { updateDayNight } from "./render/daynight.js";
@@ -105,6 +106,7 @@ async function load() {
     drawSignalViews(state.signals);
     createResidents();
     createAmbulances();
+    createBuses();
 
     setStatus(
       "Loaded " + state.ways.length + " roads, " +

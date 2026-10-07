@@ -15,6 +15,13 @@ export function updateTraffic(dt) {
 
   addAccidentObstacles(byEdge);
 
+  for (const v of state.vehicles) {
+    if (v.kind === "bus" && v.atStop && v.edge) {
+      if (!byEdge.has(v.edge)) byEdge.set(v.edge, []);
+      byEdge.get(v.edge).push({ t: v.t, speed: 0, obstacle: true });
+    }
+  }
+
   for (const list of byEdge.values()) {
     list.sort((a, b) => b.t - a.t);
     for (let i = 0; i < list.length; i++) {
