@@ -74,11 +74,12 @@ for (let sec = 0; sec < 20000; sec++) {
   updateTraffic(1);
   updateAccidents(1);
 
+  if (firstCrash < 0 && state.accidents.length > 0) firstCrash = sec;
   if (firstCrash >= 0 && state.accidents.length === 0) {
     clearedTick = sec;
     break;
   }
-  if (firstCrash < 0 && sec % 50 === 0) rollAccidents(500);
+  if (firstCrash < 0 && sec > 20) rollAccidents(500);
 }
 
 console.log("firstCrash:", firstCrash, "cleared:", clearedTick);
